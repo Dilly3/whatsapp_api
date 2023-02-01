@@ -16,5 +16,18 @@ emitter.setMaxListeners(60)
 const app = express();
 app.use(express.json(),bodyParser.urlencoded({extended:false}))
 
+app.get('/webhook', (req, res) => {
+    if (
+      req.query['hub.mode'] == 'subscribe' &&
+      req.query['hub.verify_token'] == VERIFY_TOKEN
+    ) {
+      console.log("Webhook Verified")
+      res.send(req.query['hub.challenge']);
+    } else {
+      res.sendStatus(400);
+    }
+   })
+
+
 
 app.listen(PORT, ()=>{console.log(`listening on port: ${PORT}`)})
