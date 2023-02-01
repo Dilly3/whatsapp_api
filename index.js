@@ -1,5 +1,6 @@
 require('dotenv').config();
 var bodyParser = require('body-parser')
+const {responseJson,sendReply,querySchema,unpackRequestBody} = require('./utility/helperfunc')
 
 
 
@@ -27,6 +28,39 @@ app.get('/webhook', (req, res) => {
       res.sendStatus(400);
     }
    })
+
+   app.post('/webhook',(req,res)=>{
+    //console.log(req.body.entry[0].changes[0].value.contacts[0].profile.name)
+    //console.log(req.body.entry[0].changes[0].value.metadata)
+    //entry[0].changes[0].value.messages[0].from.slice(1)
+        const{object}  = req.body
+      
+          
+            const {phone_no_id,display_phone_no,from,sender_name} = unpackRequestBody(req.body)
+                 
+        
+  
+                  // const data = {
+                  //     phone_no_id,
+                  //     phone_number :from,
+                  //     message_body,
+                  //     timestamp : format.formatRFC7231(new Date(),'YYYY/MM/dd hh:mm:ss')
+                  // }
+                  // saveData(colRef,data)
+                 
+                   sendReply(PHONE_NO_ID, WHATSAPP_TOKEN,from,sender_name)
+                   .then((response=>{
+                           const {messages} = response.data
+                        
+                            res.json({'messageID' : `${messages[0].id}`})
+                           })
+                   ).catch((err)=>{ 
+                    
+                    res.json({'Errormessage' : `${err}`})
+                  })        
+                   
+                   
+  })
 
 
 
