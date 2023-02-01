@@ -14,3 +14,29 @@ function unpackRequestBody(reqbody){
 
       return {phone_no_id,display_phone_no,from,sender_name}
 }
+
+async function sendReply (phone_no_id, whatsapp_token, to, sender_name){
+ 
+    let data = {
+     
+      "messaging_product": "whatsapp",
+      "to": to,
+      "type": "text",
+      "text": {
+      "body": `Hello ${sender_name}, Welcome to cashaam!`
+    }
+    }
+
+    
+   return await  axios({
+      method: "POST",
+      url: `https://graph.facebook.com/v15.0/${phone_no_id}/messages`,
+      data: JSON.stringify(data),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + whatsapp_token
+      }
+    });
+    
+    
+  }
