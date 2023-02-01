@@ -51,4 +51,8 @@ const querySchema = Joi.object({
   
 
 })
-module.exports =  { handlePostback, responseJson,sendReply,querySchema,unpackRequestBody };
+
+const responseJson = (res,message)=>{
+    res.json({code: res.statusCode, "message" : `${message}`})
+    }
+module.exports =  {responseJson,sendReply,querySchema,unpackRequestBody };
