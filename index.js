@@ -1,21 +1,23 @@
 require('dotenv').config();
-var bodyParser = require('body-parser')
+const express = require("express");
+const bodyParser = require('body-parser')
+const EventEmitter = require('events');
 const {sendReply,unpackRequestBody} = require('./utility/helperfunc')
 
 
-
-const express = require("express");
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN
 const WHATSAPP_TOKEN = process.env.WHATSAPP_TOKEN
 const PHONE_NO_ID = process.env.PHONE_NO_ID
 const PORT = process.env.PORT || 8000;
 
 
-const EventEmitter = require('events');
 const emitter = new EventEmitter()
-emitter.setMaxListeners(0)
+emitter.setMaxListeners(50)
+
+
 const app = express();
 app.use(express.json(),bodyParser.urlencoded({extended:false}))
+
 
 app.get('/webhook', (req, res) => {
     if (
@@ -28,6 +30,7 @@ app.get('/webhook', (req, res) => {
         res.sendStatus(400);
     }
 })
+
 
 app.post('/webhook', (req, res) => {
 
@@ -47,15 +50,8 @@ app.post('/webhook', (req, res) => {
             res.json({ 'Errormessage': `${err}` })
         })
 
-
-
-
     }
 })
-
-
-
-
 
 
 app.listen(PORT, () => {
