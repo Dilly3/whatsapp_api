@@ -1,3 +1,6 @@
+const Joi = require('joi')
+const axios = require("axios")
+
 function unpackRequestBody(reqbody){
     const{entry}  = reqbody
     let  phone_no_id, display_phone_no, from, sender_name 
@@ -40,3 +43,12 @@ async function sendReply (phone_no_id, whatsapp_token, to, sender_name){
     
     
   }
+  
+
+const querySchema = Joi.object({
+  'hub.mode': 'subscribe',
+  'hub.verify_token' : 'blueprint'
+  
+
+})
+module.exports =  { handlePostback, responseJson,sendReply,querySchema,unpackRequestBody };
