@@ -33,10 +33,10 @@ app.get('/webhook', (req, res) => {
    
         const{object,entry}  = req.body
         if(object === 'whatsapp_business_account'  && entry !== undefined){
-             
-                     unpackRequestBody(req.body).then(data=>{
-                        const {sender_number,sender_name} = data
-                        return sendReply(PHONE_NO_ID, WHATSAPP_TOKEN,sender_number,sender_name)
+
+             unpackRequestBody(req.body).then(data=>{
+                        const {sender_number,sender_name,body1} = data
+                        return sendReply(PHONE_NO_ID, WHATSAPP_TOKEN,sender_number,sender_name,body1)
                     }).then((response=>{
                         const {messages} = response.data
                      
@@ -51,10 +51,13 @@ app.get('/webhook', (req, res) => {
                     
             
                    }
-               })
+        })
+           
                
         
 
 
 
-app.listen(PORT, ()=>{console.log(`listening on port: ${PORT}`)})
+app.listen(PORT, ()=>{
+    console.log(`listening on port: ${PORT}`)
+})
