@@ -1,6 +1,6 @@
 require('dotenv').config();
 var bodyParser = require('body-parser')
-const {responseJson,sendReply,querySchema,unpackRequestBody} = require('./utility/helperfunc')
+const {sendReply,unpackRequestBody} = require('./utility/helperfunc')
 
 
 
@@ -19,45 +19,45 @@ app.use(express.json(),bodyParser.urlencoded({extended:false}))
 
 app.get('/webhook', (req, res) => {
     if (
-      req.query['hub.mode'] == 'subscribe' &&
-      req.query['hub.verify_token'] == VERIFY_TOKEN
+        req.query['hub.mode'] == 'subscribe' &&
+        req.query['hub.verify_token'] == VERIFY_TOKEN
     ) {
-      console.log("Webhook Verified")
-      res.send(req.query['hub.challenge']);
+        console.log("Webhook Verified")
+        res.send(req.query['hub.challenge']);
     } else {
-      res.sendStatus(400);
+        res.sendStatus(400);
     }
-   })
+})
 
-   app.post('/webhook',  (req,res)=>{
-   
-        const{object,entry}  = req.body
-        if(object === 'whatsapp_business_account'  && entry !== undefined){
+app.post('/webhook', (req, res) => {
 
-             unpackRequestBody(req.body).then(data=>{
-                        const {sender_number,sender_name,body1} = data
-                        return sendReply(PHONE_NO_ID, WHATSAPP_TOKEN,sender_number,sender_name,body1)
-                    }).then((response=>{
-                        const {messages} = response.data
-                     
-                         res.json({'messageID' : `${messages[0].id}`})
-                        })
-                ).catch((err)=>{ 
-                 
-                 res.json({'Errormessage' : `${err}`})
-               })      
-                    
-                    
-                    
-            
-                   }
+    const { object, entry } = req.body
+    if (object === 'whatsapp_business_account' && entry !== undefined) {
+
+        unpackRequestBody(req.body).then(data => {
+            const { sender_number, sender_name, body1 } = data
+            return sendReply(PHONE_NO_ID, WHATSAPP_TOKEN, sender_number, sender_name, body1)
+        }).then((response => {
+            const { messages } = response.data
+
+            res.json({ 'messageID': `${messages[0].id}` })
         })
-           
-               
-        
+        ).catch((err) => {
+
+            res.json({ 'Errormessage': `${err}` })
+        })
 
 
 
-app.listen(PORT, ()=>{
+
+    }
+})
+
+
+
+
+
+
+app.listen(PORT, () => {
     console.log(`listening on port: ${PORT}`)
 })
