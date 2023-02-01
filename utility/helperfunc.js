@@ -1,29 +1,51 @@
 const Joi = require('joi')
 const axios = require("axios")
 
-function unpackRequestBody(reqbody){
-    const{entry}  = reqbody
-    let  phone_no_id, display_phone_no, from, sender_name 
-    if(entry){
-       phone_no_id = entry[0].changes[0].value.metadata.phone_number_id
-      display_phone_no = entry[0].changes[0].value.metadata.display_phone_number
-      // const  from1   = entry[0].changes[0].value.messages[0].from.slice(1)
-       from   = entry[0].changes[0].value.contacts[0].wa_id
-       //const  from   = "2347030531443"
-      // const message_body = entry[0].changes[0].value.messages[0].text.body
-      sender_name = entry[0].changes[0].value.contacts[0].profile.name
-       // const   timestamp = entry[0].changes[0].value.messages[0].timestamp
+async function unpackRequestBody(reqbody){
+
+    const{object,entry}  = reqbody
+    if(object === 'whatsapp_business_account' ){
+        
+        const [det] = entry
+        const {changes} = det
+        const [metadata] = changes
+        const{value} = metadata
+        if(value !== undefined){
+           const {contacts}  = value
+           if(contacts !== undefined){
+            const [profile1] = value.contacts
+            //console.log(profile)
+            if(profile1 !== undefined){
+                const{profile} = profile1
+                const {wa_id} = profile1
+                const{name} = profile
+
+                const sender_number = wa_id
+                const sender_name = name
+                return new Promise((resolve, reject)=>{
+                    if((sender_name !== undefined) && sender_number !== undefined ){
+                        resolve({sender_number,sender_name})
+                    }
+                    else{
+                        reject({})
+                    }
+                })
+                
+               }
+           }
+        }
     }
 
-      return {phone_no_id,display_phone_no,from,sender_name}
+   
 }
 
-async function sendReply (phone_no_id, whatsapp_token, to, sender_name){
+
+async function sendReply (phone_no_id, whatsapp_token, sender_number, sender_name){
  
     let data = {
      
       "messaging_product": "whatsapp",
-      "to": to,
+      "to": sender_number,
       "type": "text",
       "text": {
       "body": `Hello ${sender_name}, Welcome to cashaam!`

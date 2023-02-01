@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 8000;
 
 const EventEmitter = require('events');
 const emitter = new EventEmitter()
-emitter.setMaxListeners(60)
+emitter.setMaxListeners(0)
 const app = express();
 app.use(express.json(),bodyParser.urlencoded({extended:false}))
 
@@ -29,38 +29,31 @@ app.get('/webhook', (req, res) => {
     }
    })
 
-   app.post('/webhook',(req,res)=>{
-    //console.log(req.body.entry[0].changes[0].value.contacts[0].profile.name)
-    //console.log(req.body.entry[0].changes[0].value.metadata)
-    //entry[0].changes[0].value.messages[0].from.slice(1)
-        const{object}  = req.body
-      
-          
-            const {phone_no_id,display_phone_no,from,sender_name} = unpackRequestBody(req.body)
+   app.post('/webhook',  (req,res)=>{
+   
+        const{object,entry}  = req.body
+        if(object === 'whatsapp_business_account'  && entry !== undefined){
+             
+                     unpackRequestBody(req.body).then(data=>{
+                        const {sender_number,sender_name} = data
+                        return sendReply(PHONE_NO_ID, WHATSAPP_TOKEN,sender_number,sender_name)
+                    }).then((response=>{
+                        const {messages} = response.data
+                     
+                         res.json({'messageID' : `${messages[0].id}`})
+                        })
+                ).catch((err)=>{ 
                  
-        
-  
-                  // const data = {
-                  //     phone_no_id,
-                  //     phone_number :from,
-                  //     message_body,
-                  //     timestamp : format.formatRFC7231(new Date(),'YYYY/MM/dd hh:mm:ss')
-                  // }
-                  // saveData(colRef,data)
-                 
-                   sendReply(PHONE_NO_ID, WHATSAPP_TOKEN,from,sender_name)
-                   .then((response=>{
-                           const {messages} = response.data
-                        
-                            res.json({'messageID' : `${messages[0].id}`})
-                           })
-                   ).catch((err)=>{ 
+                 res.json({'Errormessage' : `${err}`})
+               })      
                     
-                    res.json({'Errormessage' : `${err}`})
-                  })        
-                   
-                   
-  })
+                    
+                    
+            
+                   }
+               })
+               
+        
 
 
 
