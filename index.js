@@ -33,17 +33,20 @@ app.get('/webhook', (req, res) => {
 
 
 app.post('/webhook', (req, res) => {
-
+    let message_body1 = ""
     const { object, entry } = req.body
     if (object === 'whatsapp_business_account' && entry !== undefined) {
 
-        unpackRequestBody(req.body).then(data => {
-            const { sender_number, sender_name, body1 } = data
-            return sendReply(PHONE_NO_ID, WHATSAPP_TOKEN, sender_number, sender_name, body1)
+        unpackRequestBody(req.body)
+        .then(data => {
+            const { sender_number, sender_name, body1:message_body } = data
+            message_body1 = message_body
+            return sendReply(PHONE_NO_ID, WHATSAPP_TOKEN, sender_number, sender_name, message_body)
         }).then((response => {
-            const { messages } = response.data
-
-            res.json({ 'messageID': `${messages[0].id}` })
+            const { messages,contacts } = response.data
+            
+            
+            res.json({ 'messageID': `${messages[0].id}`, sender_phone_number : `${contacts[0].wa_id}`, "message_body" : `${message_body1}` })
         })
         ).catch((err) => {
 
