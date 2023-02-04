@@ -1,8 +1,10 @@
 require('dotenv').config();
+const {format} = require('date-fns')
 const express = require("express");
 const bodyParser = require('body-parser')
 const EventEmitter = require('events');
 const {sendReply,unpackRequestBody} = require('./utility/helperfunc')
+const {getDocuments,addDocument} = require('./service/message-repo');
 
 
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN
@@ -34,13 +36,19 @@ app.get('/webhook', (req, res) => {
 
 app.post('/webhook', (req, res) => {
     let message_body1 = ""
-    const { object, entry } = req.body
+    const { object, entry } = req.body 
     if (object === 'whatsapp_business_account' && entry !== undefined) {
 
         unpackRequestBody(req.body)
         .then(data => {
-            const { sender_number, sender_name, body1:message_body } = data
+            const { sender_number, sender_name, body1:message_body, timestamp1:timestamp } = data
             message_body1 = message_body
+            addDocument({phone_number:sender_number, message_body:message_body,timestamp: `${new Date()}`})
+            .then((data)=>{
+            console.log(data)
+            })
+            .catch((err)=>{console.log(err)})
+            
             return sendReply(PHONE_NO_ID, WHATSAPP_TOKEN, sender_number, sender_name, message_body)
         }).then((response => {
             const { messages,contacts } = response.data
