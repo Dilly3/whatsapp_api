@@ -4,7 +4,7 @@ const express = require("express");
 const bodyParser = require('body-parser')
 const EventEmitter = require('events');
 const {sendReply,unpackRequestBody} = require('./utility/helperfunc')
-const {getDocuments,addDocument} = require('./service/message-repo');
+
 
 
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN
@@ -12,13 +12,20 @@ const WHATSAPP_TOKEN = process.env.WHATSAPP_TOKEN
 const PHONE_NO_ID = process.env.PHONE_NO_ID
 const PORT = process.env.PORT || 8000;
 
+const app = express();
+app.use(express.json(),bodyParser.urlencoded({extended:false}))
+
 
 const emitter = new EventEmitter()
 emitter.setMaxListeners(50)
 
 
-const app = express();
-app.use(express.json(),bodyParser.urlencoded({extended:false}))
+
+const {Store} = require('./service/message-repo'); //
+const msg_store = new Store() // 
+
+
+
 
 
 app.get('/webhook', (req, res) => {
@@ -43,7 +50,7 @@ app.post('/webhook', (req, res) => {
         .then(data => {
             const { sender_number, sender_name, body1:message_body, timestamp1:timestamp } = data
             message_body1 = message_body
-            addDocument({phone_number:sender_number, message_body:message_body,timestamp: `${new Date()}`})
+            msg_store.addDocument({phone_number:sender_number, message_body:message_body,timestamp: `${new Date()}`})
             .then((data)=>{
             console.log(data)
             })

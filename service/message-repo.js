@@ -1,10 +1,13 @@
-
 const {colref} = require('../database/config')
+function Store(){
+     this.Colref = colref
+}
 
 
-function getDocuments(){
+Store.prototype.getDocuments = function(){
+    const {Colref} = this
     return new Promise((resolve,reject)=>{
-        colref.get()
+        Colref.get()
     .then((snap)=>{
         let messages = []
         snap.docs.forEach(
@@ -23,9 +26,10 @@ function getDocuments(){
      
 }
 
-function addDocument(doc){  
+Store.prototype.addDocument = function(doc){  
+    const {Colref} = this
     return new Promise((resolve,reject)=>{
-        colref
+        Colref
         .add(doc)
         .then((docRef) => {                 
                 console.log("Document written with ID: ", docRef.id);
@@ -40,4 +44,4 @@ function addDocument(doc){
 })
 }
 
-module.exports = {addDocument,getDocuments}
+module.exports = {Store}
