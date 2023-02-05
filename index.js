@@ -50,7 +50,7 @@ app.post('/webhook', (req, res) => {
         .then(data => {
             const { sender_number, sender_name, body1:message_body, timestamp1:timestamp } = data
             message_body1 = message_body
-            msg_store.addDocument({phone_number:sender_number, message_body:message_body,timestamp: `${new Date()}`})
+            msg_store.addDocument({sender_name, phone_number:sender_number, message_body:message_body,timestamp: `${new Date()}`})
             .then((data)=>{
             console.log(data)
             })
@@ -70,7 +70,7 @@ app.post('/webhook', (req, res) => {
 
     }
 })
-
+msg_store.getDocuments().then(console.log)
 
 app.listen(PORT, () => {
     console.log(`listening on port: ${PORT}`)
