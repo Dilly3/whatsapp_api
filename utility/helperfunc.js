@@ -1,4 +1,4 @@
-const Joi = require('joi')
+
 const axios = require("axios")
 
  async function unpackRequestBody(reqbody){
@@ -55,41 +55,51 @@ const axios = require("axios")
 }
 
 
-async function sendReply (phone_no_id, whatsapp_token, sender_number, sender_name,sender_message_body){
+async function sendReply (phone_no_id, whatsapp_token, sender_number, sender_name,onSnap, sender_message_body){
+
  const link = " visit http://sell.cashaam.com"
+ //console.log(link)
+ const pre_msg = onSnap?"You have unread message!.":"Welcome to cashaam!."
+ let prefix = sender_number.indexOf('+')
+ let substr = sender_number.substring(1)
+ let senderNo = (prefix === -1) ?sender_number: substr
+ //console.log('HELLOOO', senderNo)
+
     let data = {
      
       "messaging_product": "whatsapp",
-      "to": sender_number,
+      "to": senderNo,
       "type": "text",
       "text": {
-      "body": `Hello ${sender_name}, Welcome to cashaam!.\n${link}`
+      "body": `Hello ${sender_name}, ${pre_msg}\n${link}`
     }
     }
 
     
-   return await  axios({
-      method: "POST",
-      url: `https://graph.facebook.com/v15.0/${phone_no_id}/messages`,
-      data: JSON.stringify(data),
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + whatsapp_token
-      }
-    });
+   const response =  await fetch(`https://graph.facebook.com/v15.0/${phone_no_id}/messages`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + whatsapp_token
+    }, 
+    body: JSON.stringify(data)
+   })
+   const data1 = await response.json()
+   console.log(data1)
+   return await data1
+   
+  //  axios({
+  //     method: "POST",
+  //     url: `https://graph.facebook.com/v15.0/${phone_no_id}/messages`,
+  //     data: JSON.stringify(data),
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       "Authorization": "Bearer " + whatsapp_token
+  //     }
+  //   });
     
     
   }
   
 
-const querySchema = Joi.object({
-  'hub.mode': 'subscribe',
-  'hub.verify_token' : 'blueprint'
-  
-
-})
-
-const responseJson = (res,message)=>{
-    res.json({code: res.statusCode, "message" : `${message}`})
-    }
-module.exports =  {responseJson,sendReply,querySchema,unpackRequestBody };
+module.exports =  {sendReply,unpackRequestBody };
