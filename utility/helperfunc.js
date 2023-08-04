@@ -57,9 +57,9 @@ async function unpackRequestBody(reqbody) {
 
 async function sendReply(phone_no_id, whatsapp_token, sender_number, sender_name, onSnap, sender_message_body) {
 
-    const link = " visit http://sell.cashaam.com"
+    const link = " visit https://shoparena-frontend-phi.vercel.app"
     //console.log(link)
-    const pre_msg = onSnap ? "You have unread message!." : "Welcome to cashaam!."
+    const pre_msg = onSnap ? "You have unread message!." : "Welcome to oja!."
     let prefix = sender_number.indexOf('+')
     let substr = sender_number.substring(1)
     let senderNo = (prefix === -1) ? sender_number : substr
