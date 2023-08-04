@@ -101,7 +101,7 @@ msgRef.orderBy ('updatedAt', 'asc').onSnapshot (snapshot => {
           firstName,
           sellerUnread,
         } = data.sellerInfo.sellerInfo;
-
+        //send reply to sender
         sendReply (PHONE_NO_ID, WHATSAPP_TOKEN, phoneNumber, firstName, true);
         msg_store.msgRef.doc (docid).set (
           {
