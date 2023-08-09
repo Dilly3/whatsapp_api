@@ -1,5 +1,4 @@
 
-const axios = require("axios")
 
 async function unpackRequestBody(reqbody) {
     let body1,
@@ -58,12 +57,11 @@ async function unpackRequestBody(reqbody) {
 async function sendReply(phone_no_id, whatsapp_token, sender_number, sender_name, onSnap, sender_message_body) {
 
     const link = " visit https://shoparena-frontend-phi.vercel.app"
-    //console.log(link)
     const pre_msg = onSnap ? "You have unread message!." : "Welcome to oja!."
     let prefix = sender_number.indexOf('+')
     let substr = sender_number.substring(1)
     let senderNo = (prefix === -1) ? sender_number : substr
-    //console.log('HELLOOO', senderNo)
+   
 
     let data = {
 
@@ -85,18 +83,10 @@ async function sendReply(phone_no_id, whatsapp_token, sender_number, sender_name
         body: JSON.stringify(data)
     })
     const data1 = await response.json()
-    //console.log(data1)
+   
     return await data1
 
-    //  axios({
-    //     method: "POST",
-    //     url: `https://graph.facebook.com/v15.0/${phone_no_id}/messages`,
-    //     data: JSON.stringify(data),
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //       "Authorization": "Bearer " + whatsapp_token
-    //     }
-    //   });
+   
 
 
 }
